@@ -8,17 +8,47 @@
 
 body{font-family:Arial;margin:0;background:#f4f6ff}
 
-header{display:flex;align-items:center;background:#222;color:white;padding:10px}
+header{
+display:flex;
+align-items:center;
+background:#222;
+color:white;
+padding:10px
+}
 
-header img{width:45px;height:45px;border-radius:50%;margin-right:10px}
+header img{
+width:45px;
+height:45px;
+border-radius:50%;
+margin-right:10px
+}
 
 .lang{margin-left:auto}
 
-.search{width:90%;margin:10px;padding:10px}
+.lang button{
+margin-left:5px;
+padding:4px 8px
+}
 
-.categories{padding:10px}
+.activeLang{
+background:green;
+color:white
+}
 
-.categories button{margin:4px;padding:6px 10px}
+.search{
+width:90%;
+margin:10px;
+padding:10px
+}
+
+.categories{
+padding:10px
+}
+
+.categories button{
+margin:4px;
+padding:6px 10px
+}
 
 .grid{
 display:grid;
@@ -27,13 +57,43 @@ gap:10px;
 padding:10px
 }
 
-.card{background:white;padding:10px;border-radius:8px;text-align:center}
+.card{
+background:white;
+padding:10px;
+border-radius:8px;
+text-align:center
+}
 
-.card img{width:100%;height:120px;object-fit:cover;border-radius:6px}
+.card img{
+width:100%;
+height:120px;
+object-fit:cover;
+border-radius:6px
+}
 
-.admin{background:white;margin:10px;padding:15px;border-radius:8px}
+.admin{
+display:none;
+background:white;
+margin:10px;
+padding:15px;
+border-radius:8px
+}
 
-.admin input,.admin select{width:95%;padding:6px;margin:5px 0}
+.admin input,.admin select{
+width:95%;
+padding:6px;
+margin:5px 0
+}
+
+.highlight{
+animation:blink 0.4s 2
+}
+
+@keyframes blink{
+0%{background:#b6ffb6}
+50%{background:white}
+100%{background:#b6ffb6}
+}
 
 .small{font-size:11px}
 
@@ -44,51 +104,55 @@ padding:10px
 
 <header>
 
-<img id="ownerImg" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+<img id="ownerImg">
 
 <h2>SADDAM KIRANA STORE</h2>
 
 <div class="lang">
-<button onclick="setLang('en')">EN</button>
-<button onclick="setLang('hi')">HI</button>
+
+<button id="btnEn" onclick="setLang('en')">English ✔</button>
+<button id="btnHi" onclick="setLang('hi')">हिन्दी</button>
+
 </div>
 
 </header>
 
 
-<input id="search" class="search" placeholder="Search product">
-
+<input id="search" class="search" placeholder="Search">
 
 <div class="categories" id="cats"></div>
-
 
 <div class="grid" id="products"></div>
 
 
-<div class="admin" id="admin" style="display:none">
+
+<div class="admin" id="admin">
 
 <h3>ADMIN PANEL</h3>
 
 <b>Owner Photo</b>
-
 <input type="file" onchange="uploadOwner(event)">
 
 <hr>
 
-<b>Add / Edit Category</b>
+<div id="catSection">
+
+<b>Category</b>
 
 <input id="catEn" placeholder="Category English">
-
 <input id="catHi" placeholder="Category Hindi">
 
 <button onclick="addCategory()">Save Category</button>
 
+</div>
+
 <hr>
 
-<b>Add / Edit Product</b>
+<div id="prodSection">
+
+<b>Product</b>
 
 <input id="pEn" placeholder="Product English">
-
 <input id="pHi" placeholder="Product Hindi">
 
 <input id="pPrice" placeholder="Price">
@@ -101,70 +165,75 @@ padding:10px
 
 </div>
 
+</div>
+
 
 <script>
 
 let lang="en"
 
-let categories=JSON.parse(localStorage.getItem("cats"))||[]
+let categories=JSON.parse(localStorage.getItem("cats"))||[
+{en:"Kirana",hi:"किराना"},
+{en:"Snacks",hi:"स्नैक्स"},
+{en:"Electronics",hi:"इलेक्ट्रॉनिक्स"},
+{en:"Cosmetics",hi:"कॉस्मेटिक्स"}
+]
 
-let products=JSON.parse(localStorage.getItem("prods"))||[]
-
-let owner=localStorage.getItem("owner")
-
-if(owner) document.getElementById("ownerImg").src=owner
-
+let products=JSON.parse(localStorage.getItem("prods"))||[
+{en:"Maggi",hi:"मैगी",price:14,cat:"Snacks",img:""},
+{en:"Biscuit",hi:"बिस्किट",price:10,cat:"Snacks",img:""},
+{en:"LED Bulb",hi:"एलईडी बल्ब",price:80,cat:"Electronics",img:""}
+]
 
 function save(){
-
 localStorage.setItem("cats",JSON.stringify(categories))
 localStorage.setItem("prods",JSON.stringify(products))
-
 }
-
 
 function setLang(l){
 
 lang=l
+
+document.getElementById("btnEn").innerText=
+l=="en"?"English ✔":"English"
+
+document.getElementById("btnHi").innerText=
+l=="hi"?"हिन्दी ✔":"हिन्दी"
+
 render()
 
 }
 
+function transliterate(t){
 
-function transliterate(text){
-
-let map={
-a:"अ",b:"ब",c:"क",d:"द",e:"ए",f:"फ",g:"ग",h:"ह",i:"इ",
-j:"ज",k:"क",l:"ल",m:"म",n:"न",o:"ओ",p:"प",q:"क",r:"र",
-s:"स",t:"ट",u:"उ",v:"व",w:"व",x:"क्स",y:"य",z:"ज"
+return t
+.replace(/a/g,"अ")
+.replace(/b/g,"ब")
+.replace(/c/g,"क")
+.replace(/d/g,"द")
+.replace(/e/g,"ए")
+.replace(/f/g,"फ")
+.replace(/g/g,"ग")
+.replace(/h/g,"ह")
+.replace(/i/g,"इ")
+.replace(/l/g,"ल")
+.replace(/m/g,"म")
+.replace(/n/g,"न")
+.replace(/o/g,"ओ")
+.replace(/p/g,"प")
+.replace(/r/g,"र")
+.replace(/s/g,"स")
+.replace(/t/g,"ट")
+.replace(/u/g,"उ")
 }
-
-let r=""
-
-text.toLowerCase().split("").forEach(ch=>{
-
-r+=map[ch]||ch
-
-})
-
-return r
-
-}
-
 
 document.getElementById("catEn").oninput=function(){
-
 document.getElementById("catHi").value=transliterate(this.value)
-
 }
-
 
 document.getElementById("pEn").oninput=function(){
-
 document.getElementById("pHi").value=transliterate(this.value)
-
 }
-
 
 function renderCats(){
 
@@ -174,29 +243,25 @@ categories.forEach((c,i)=>{
 
 let name=lang=="en"?c.en:c.hi
 
-html+=`
-<button onclick="filter('${c.en}')">${name}</button>
-<button class="small" onclick="editCat(${i})">Edit</button>
-<button class="small" onclick="deleteCat(${i})">X</button>
-`
+html+=`<button onclick="filter('${c.en}')">${name}</button>`
+
+if(isAdmin)
+html+=` <button class="small" onclick="editCat(${i})">Edit</button>
+<button class="small" onclick="deleteCat(${i})">X</button>`
 
 })
 
 document.getElementById("cats").innerHTML=html
-
 
 let sel=document.getElementById("pCat")
 
 sel.innerHTML=""
 
 categories.forEach(c=>{
-
 sel.innerHTML+=`<option>${c.en}</option>`
-
 })
 
 }
-
 
 function renderProducts(list){
 
@@ -206,25 +271,21 @@ list.forEach((p,i)=>{
 
 let name=lang=="en"?p.en:p.hi
 
-let img=p.img?p.img:`https://source.unsplash.com/400x300/?${p.en}`
+let img=p.img||`https://source.unsplash.com/400x300/?${p.en}`
 
-html+=`
-
-<div class="card">
+html+=`<div class="card">
 
 <img src="${img}">
 
 <h4>${name}</h4>
 
-<p>₹${p.price}</p>
+<p>₹${p.price}</p>`
 
-<button class="small" onclick="editProduct(${i})">Edit</button>
+if(isAdmin)
+html+=`<button class="small" onclick="editProduct(${i})">Edit</button>
+<button class="small" onclick="deleteProduct(${i})">Delete</button>`
 
-<button class="small" onclick="deleteProduct(${i})">Delete</button>
-
-</div>
-
-`
+html+=`</div>`
 
 })
 
@@ -232,14 +293,13 @@ document.getElementById("products").innerHTML=html
 
 }
 
-
 function render(){
 
 renderCats()
+
 renderProducts(products)
 
 }
-
 
 function filter(cat){
 
@@ -249,6 +309,13 @@ renderProducts(r)
 
 }
 
+function highlight(el){
+
+el.classList.add("highlight")
+
+setTimeout(()=>el.classList.remove("highlight"),800)
+
+}
 
 function addCategory(){
 
@@ -263,10 +330,7 @@ render()
 document.getElementById("catEn").value=""
 document.getElementById("catHi").value=""
 
-window.scrollTo({top:0,behavior:"smooth"})
-
 }
-
 
 function deleteCat(i){
 
@@ -277,7 +341,6 @@ render()
 
 }
 
-
 function editCat(i){
 
 let c=categories[i]
@@ -287,11 +350,13 @@ document.getElementById("catHi").value=c.hi
 
 categories.splice(i,1)
 
-window.location.hash="#admin"
-window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})
+let sec=document.getElementById("catSection")
+
+sec.scrollIntoView()
+
+highlight(sec)
 
 }
-
 
 function addProduct(){
 
@@ -315,10 +380,7 @@ document.getElementById("pHi").value=""
 document.getElementById("pPrice").value=""
 document.getElementById("pImg").value=""
 
-window.scrollTo({top:0,behavior:"smooth"})
-
 }
-
 
 function deleteProduct(i){
 
@@ -328,7 +390,6 @@ save()
 render()
 
 }
-
 
 function editProduct(i){
 
@@ -341,41 +402,51 @@ document.getElementById("pImg").value=p.img
 
 products.splice(i,1)
 
-window.location.hash="#admin"
-window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})
+let sec=document.getElementById("prodSection")
+
+sec.scrollIntoView()
+
+highlight(sec)
 
 }
-
-
-function uploadOwner(e){
-
-let reader=new FileReader()
-
-reader.onload=function(){
-
-localStorage.setItem("owner",reader.result)
-
-document.getElementById("ownerImg").src=reader.result
-
-}
-
-reader.readAsDataURL(e.target.files[0])
-
-}
-
 
 document.getElementById("search").oninput=function(){
 
 let t=this.value.toLowerCase()
 
-let r=products.filter(p=>p.en.toLowerCase().includes(t)||p.hi.includes(t))
+let r=products.filter(p=>
+p.en.toLowerCase().includes(t)||
+p.hi.includes(t)
+)
 
 renderProducts(r)
 
 }
 
+function uploadOwner(e){
+
+let r=new FileReader()
+
+r.onload=function(){
+
+localStorage.setItem("owner",r.result)
+
+document.getElementById("ownerImg").src=r.result
+
+}
+
+r.readAsDataURL(e.target.files[0])
+
+}
+
+let owner=localStorage.getItem("owner")
+
+if(owner) document.getElementById("ownerImg").src=owner
+
+let isAdmin=false
 
 if(location.hash=="#admin"){
+isAdmin=true
 document.getElementById("admin").style.display="block"
 }
 
