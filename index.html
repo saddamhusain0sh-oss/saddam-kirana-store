@@ -157,7 +157,7 @@ let name=lang=="en"?p.name_en:p.name_hi
 
 html+=`
 <div class="card" onclick="openProduct(${i})">
-<img src="${p.imgs[0]}">
+<img src="${p.imgs[0] || autoImage(p.name_en)}">
 <h4>${name}</h4>
 ${p.price?`<p>₹${p.price}</p>`:""}
 </div>
