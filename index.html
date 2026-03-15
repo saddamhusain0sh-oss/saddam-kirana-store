@@ -8,51 +8,39 @@
 <style>
 body{font-family:Arial;margin:0;background:#f4f6ff}
 
-/* header */
 header{display:flex;align-items:center;padding:15px;background:#222;color:white}
-header img{width:50px;height:50px;border-radius:50%;margin-right:10px}
-header h1{font-size:26px;margin:0}
+header img{width:45px;height:45px;border-radius:50%;margin-right:10px}
+header h1{font-size:22px;margin:0}
 
-/* language */
 .lang{margin-left:auto}
 .lang button{margin-left:5px}
 
-/* slider */
-.slider{width:100%;height:160px;overflow:hidden}
-.slider img{width:100%;height:160px;object-fit:cover}
+.slider img{width:100%;height:150px;object-fit:cover}
 
-/* search */
-.search{width:90%;margin:10px;padding:10px;font-size:16px}
+.search{width:90%;margin:10px;padding:10px}
 
-/* categories */
 .categories{padding:10px}
 .categories button{margin:4px;padding:6px 10px}
 
-/* grid */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:10px}
+
 .card{background:white;border-radius:10px;padding:10px;text-align:center}
 .card img{width:100%;height:120px;object-fit:cover;border-radius:6px}
 
-/* modal product */
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:white;display:none;flex-direction:column}
-.modal img{width:100%;height:60vh;object-fit:cover}
-.modal .info{padding:15px}
+.admin{background:white;margin:10px;padding:15px;border-radius:8px}
+.admin input,.admin select{display:block;margin:5px 0;padding:6px;width:95%}
+.admin button{margin-top:5px}
 
-/* admin */
-.admin{display:none;padding:20px}
-.admin input{display:block;margin:5px 0;padding:5px}
+.smallbtn{font-size:11px;margin-top:4px}
 </style>
 </head>
-<script>
-function autoImage(name){
-  return "https://source.unsplash.com/400x400/?" + name;
-}
-</script>
+
 <body>
 
 <header>
-<img id="ownerPhoto" src="">
+<img src="https://cdn-icons-png.flaticon.com/512/891/891462.png">
 <h1>SADDAM KIRANA STORE</h1>
+
 <div class="lang">
 <button onclick="setLang('en')">EN</button>
 <button onclick="setLang('hi')">HI</button>
@@ -69,85 +57,117 @@ function autoImage(name){
 
 <div class="grid" id="products"></div>
 
-<div class="modal" id="modal">
-<img id="modalImg">
-<div class="info">
-<h2 id="modalName"></h2>
-<p id="modalPrice"></p>
-<button onclick="closeModal()">Close</button>
-</div>
-</div>
+<div class="admin">
 
-<div class="admin" id="admin">
-<h2>ADMIN PANEL</h2>
+<h3>ADMIN PANEL</h3>
 
-<input id="catName" placeholder="Category name">
+<b>Add Category</b>
+
+<input id="catNameEn" placeholder="Category English">
+<input id="catNameHi" placeholder="Category Hindi (auto)">
 <button onclick="addCategory()">Add Category</button>
 
 <hr>
 
-<input id="pNameEn" placeholder="Product name English">
-<input id="pNameHi" placeholder="Product name Hindi">
-<input id="pPrice" placeholder="Price (optional)">
-<input id="pCat" placeholder="Category">
-<input id="pImages" placeholder="Image links comma separated">
+<b>Add Product</b>
+
+<input id="pNameEn" placeholder="Product English">
+<input id="pNameHi" placeholder="Product Hindi (auto)">
+<input id="pPrice" placeholder="Price">
+
+<select id="pCat"></select>
+
+<input id="pImg" placeholder="Image link (optional)">
 
 <button onclick="addProduct()">Add Product</button>
+
 </div>
 
 <script>
 
 let lang="en"
 
-let categories = JSON.parse(localStorage.getItem("categories")) || [];
-let products = JSON.parse(localStorage.getItem("products")) || [];
+function transliterate(text){
+return text
+.replace(/a/g,"अ")
+.replace(/b/g,"ब")
+.replace(/c/g,"क")
+.replace(/d/g,"ड")
+.replace(/e/g,"ए")
+.replace(/f/g,"फ")
+.replace(/g/g,"ग")
+.replace(/h/g,"ह")
+.replace(/i/g,"इ")
+.replace(/j/g,"ज")
+.replace(/k/g,"क")
+.replace(/l/g,"ल")
+.replace(/m/g,"म")
+.replace(/n/g,"न")
+.replace(/o/g,"ओ")
+.replace(/p/g,"प")
+.replace(/q/g,"क")
+.replace(/r/g,"र")
+.replace(/s/g,"स")
+.replace(/t/g,"ट")
+.replace(/u/g,"उ")
+.replace(/v/g,"व")
+.replace(/w/g,"व")
+.replace(/x/g,"क्स")
+.replace(/y/g,"य")
+.replace(/z/g,"ज")
+}
+
+let categories=JSON.parse(localStorage.getItem("cats"))||[
+{en:"Kirana",hi:"किराना"},
+{en:"Snacks",hi:"स्नैक्स"},
+{en:"Electronics",hi:"इलेक्ट्रॉनिक्स"},
+{en:"Cosmetics",hi:"कॉस्मेटिक्स"},
+{en:"Stationery",hi:"स्टेशनरी"}
+]
+
+let products=JSON.parse(localStorage.getItem("prods"))||[
+{name_en:"Maggi",name_hi:"मैगी",price:14,cat:"Snacks",img:""},
+{name_en:"Biscuit",name_hi:"बिस्किट",price:10,cat:"Snacks",img:""},
+{name_en:"LED Bulb",name_hi:"एलईडी बल्ब",price:80,cat:"Electronics",img:""},
+{name_en:"Face Cream",name_hi:"फेस क्रीम",price:120,cat:"Cosmetics",img:""},
+{name_en:"Notebook",name_hi:"कॉपी",price:40,cat:"Stationery",img:""}
+]
+
+function save(){
+localStorage.setItem("cats",JSON.stringify(categories))
+localStorage.setItem("prods",JSON.stringify(products))
+}
+
 function setLang(l){
 lang=l
 render()
 }
 
-function addCategory(){
-let c=document.getElementById("catName").value
-categories.push(c)
+function renderCats(){
 
-localStorage.setItem("categories",JSON.stringify(categories))
+let html=""
 
-render()
-}
+categories.forEach((c,i)=>{
 
-function addProduct(){
+let name=lang=="en"?c.en:c.hi
 
-let p={
-name_en:document.getElementById("pNameEn").value,
-name_hi:document.getElementById("pNameHi").value,
-price:document.getElementById("pPrice").value,
-cat:document.getElementById("pCat").value,
-imgs: document.getElementById("pImages").value
-? document.getElementById("pImages").value.split(",")
-: [`https://source.unsplash.com/600x400/?${document.getElementById("pNameEn").value}`]
-}
+html+=`<button onclick="filter('${c.en}')">${name}</button>`
 
-products.push(p)
-
-localStorage.setItem("products",JSON.stringify(products))
-
-render()
-
-function render(){
-
-let catHTML=""
-
-categories.forEach(c=>{
-catHTML+=`<button onclick="filter('${c}')">${c}</button>`
 })
 
-document.getElementById("cats").innerHTML=catHTML
+document.getElementById("cats").innerHTML=html
 
-show(products)
+let sel=document.getElementById("pCat")
+
+sel.innerHTML=""
+
+categories.forEach(c=>{
+sel.innerHTML+=`<option value="${c.en}">${c.en}</option>`
+})
 
 }
 
-function show(list){
+function renderProducts(list){
 
 let html=""
 
@@ -155,11 +175,16 @@ list.forEach((p,i)=>{
 
 let name=lang=="en"?p.name_en:p.name_hi
 
+let img=p.img?p.img:`https://source.unsplash.com/400x300/?${p.name_en}`
+
 html+=`
-<div class="card" onclick="openProduct(${i})">
-<img src="${p.imgs[0] || autoImage(p.name_en)}">
+<div class="card">
+<img src="${img}">
 <h4>${name}</h4>
-${p.price?`<p>₹${p.price}</p>`:""}
+<p>₹${p.price}</p>
+
+<button class="smallbtn" onclick="deleteProduct(${i})">Delete</button>
+
 </div>
 `
 
@@ -169,10 +194,66 @@ document.getElementById("products").innerHTML=html
 
 }
 
+function render(){
+
+renderCats()
+renderProducts(products)
+
+}
+
 function filter(cat){
 
 let r=products.filter(p=>p.cat==cat)
-show(r)
+
+renderProducts(r)
+
+}
+
+function addCategory(){
+
+let en=document.getElementById("catNameEn").value
+
+let hi=document.getElementById("catNameHi").value||transliterate(en)
+
+categories.push({en:en,hi:hi})
+
+save()
+
+render()
+
+}
+
+function addProduct(){
+
+let en=document.getElementById("pNameEn").value
+
+let hi=document.getElementById("pNameHi").value||transliterate(en)
+
+let p={
+
+name_en:en,
+name_hi:hi,
+price:document.getElementById("pPrice").value,
+cat:document.getElementById("pCat").value,
+img:document.getElementById("pImg").value
+
+}
+
+products.push(p)
+
+save()
+
+render()
+
+}
+
+function deleteProduct(i){
+
+products.splice(i,1)
+
+save()
+
+render()
 
 }
 
@@ -182,35 +263,11 @@ let t=this.value.toLowerCase()
 
 let r=products.filter(p=>
 p.name_en.toLowerCase().includes(t)||
-p.name_hi.toLowerCase().includes(t)
+p.name_hi.includes(t)
 )
 
-show(r)
+renderProducts(r)
 
-}
-
-function openProduct(i){
-
-let p=products[i]
-
-document.getElementById("modal").style.display="flex"
-
-document.getElementById("modalImg").src=p.imgs[0]
-
-document.getElementById("modalName").innerText=
-lang=="en"?p.name_en:p.name_hi
-
-document.getElementById("modalPrice").innerText=
-p.price?`₹${p.price}`:""
-
-}
-
-function closeModal(){
-document.getElementById("modal").style.display="none"
-}
-
-if(location.hash=="#admin"){
-document.getElementById("admin").style.display="block"
 }
 
 render()
