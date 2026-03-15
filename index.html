@@ -110,6 +110,9 @@ render()
 function addCategory(){
 let c=document.getElementById("catName").value
 categories.push(c)
+
+localStorage.setItem("categories",JSON.stringify(categories))
+
 render()
 }
 
