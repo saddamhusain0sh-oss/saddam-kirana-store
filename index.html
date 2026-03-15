@@ -6,7 +6,7 @@
 
 <style>
 
-body{font-family:Arial;margin:0;background:#f5f6ff}
+body{font-family:Arial;margin:0;background:#f4f6ff}
 
 header{display:flex;align-items:center;background:#222;color:white;padding:10px}
 
@@ -44,7 +44,7 @@ padding:10px
 
 <header>
 
-<img id="ownerImg" src="">
+<img id="ownerImg" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
 
 <h2>SADDAM KIRANA STORE</h2>
 
@@ -56,14 +56,16 @@ padding:10px
 </header>
 
 
-<input id="search" class="search" placeholder="Search">
+<input id="search" class="search" placeholder="Search product">
+
 
 <div class="categories" id="cats"></div>
+
 
 <div class="grid" id="products"></div>
 
 
-<div class="admin">
+<div class="admin" id="admin" style="display:none">
 
 <h3>ADMIN PANEL</h3>
 
@@ -116,7 +118,6 @@ if(owner) document.getElementById("ownerImg").src=owner
 function save(){
 
 localStorage.setItem("cats",JSON.stringify(categories))
-
 localStorage.setItem("prods",JSON.stringify(products))
 
 }
@@ -125,7 +126,6 @@ localStorage.setItem("prods",JSON.stringify(products))
 function setLang(l){
 
 lang=l
-
 render()
 
 }
@@ -206,7 +206,7 @@ list.forEach((p,i)=>{
 
 let name=lang=="en"?p.en:p.hi
 
-let img=p.img||`https://source.unsplash.com/400x300/?${p.en}`
+let img=p.img?p.img:`https://source.unsplash.com/400x300/?${p.en}`
 
 html+=`
 
@@ -236,7 +236,6 @@ document.getElementById("products").innerHTML=html
 function render(){
 
 renderCats()
-
 renderProducts(products)
 
 }
@@ -254,14 +253,17 @@ renderProducts(r)
 function addCategory(){
 
 let en=document.getElementById("catEn").value
-
 let hi=document.getElementById("catHi").value
 
 categories.push({en,hi})
 
 save()
-
 render()
+
+document.getElementById("catEn").value=""
+document.getElementById("catHi").value=""
+
+window.scrollTo({top:0,behavior:"smooth"})
 
 }
 
@@ -271,7 +273,6 @@ function deleteCat(i){
 categories.splice(i,1)
 
 save()
-
 render()
 
 }
@@ -282,10 +283,12 @@ function editCat(i){
 let c=categories[i]
 
 document.getElementById("catEn").value=c.en
-
 document.getElementById("catHi").value=c.hi
 
 categories.splice(i,1)
+
+window.location.hash="#admin"
+window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})
 
 }
 
@@ -295,13 +298,9 @@ function addProduct(){
 let p={
 
 en:document.getElementById("pEn").value,
-
 hi:document.getElementById("pHi").value,
-
 price:document.getElementById("pPrice").value,
-
 cat:document.getElementById("pCat").value,
-
 img:document.getElementById("pImg").value
 
 }
@@ -309,8 +308,14 @@ img:document.getElementById("pImg").value
 products.push(p)
 
 save()
-
 render()
+
+document.getElementById("pEn").value=""
+document.getElementById("pHi").value=""
+document.getElementById("pPrice").value=""
+document.getElementById("pImg").value=""
+
+window.scrollTo({top:0,behavior:"smooth"})
 
 }
 
@@ -320,7 +325,6 @@ function deleteProduct(i){
 products.splice(i,1)
 
 save()
-
 render()
 
 }
@@ -331,14 +335,14 @@ function editProduct(i){
 let p=products[i]
 
 document.getElementById("pEn").value=p.en
-
 document.getElementById("pHi").value=p.hi
-
 document.getElementById("pPrice").value=p.price
-
 document.getElementById("pImg").value=p.img
 
 products.splice(i,1)
+
+window.location.hash="#admin"
+window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})
 
 }
 
@@ -370,6 +374,10 @@ renderProducts(r)
 
 }
 
+
+if(location.hash=="#admin"){
+document.getElementById("admin").style.display="block"
+}
 
 render()
 
